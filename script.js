@@ -17,54 +17,56 @@ const logo = document.getElementById('logo');
 const floatingCover = document.getElementById('floatingCover');
 const floatingImage = document.getElementById('floatingImage');
 
-let animationFrameId = null;
+// Функция обновления видимости плавающей капли
+function updateFloatingCoverVisibility() {
+  // Показываем каплю, если песня загружена (src есть) и не на паузе
+  if (audioPlayer.src && !audioPlayer.paused && !player.classList.contains('minimized')) {
+    hideFloatingCover(); // если панель открыта, капля не нужна
+  } else if (audioPlayer.src && !audioPlayer.paused && player.classList.contains('minimized')) {
+    // Показываем каплю, если плеер свернут и песня играет
+    floatingImage.src = coverImage.src || 'covers/default.jpg';
+    showFloatingCover();
+  } else {
+    hideFloatingCover();
+  }
+}
 
 // Обработка клика по заголовку "Fernie"
 logo.addEventListener('click', () => {
-  // Показываем стартовую страницу
   songTitle.textContent = 'FernieX — Музыка';
   songArtist.textContent = 'Выберите желаемый музыкальный трек в панели слева.';
   lyricsElement.textContent = 'Текст песни появится здесь...';
 
-  // Скрываем детали трека с анимацией
   fadeOutElement(coverImage);
   fadeOutElement(lyricsElement);
   fadeOutElement(audioControls);
 
-  // Добавляем класс для смещения панели вниз
   player.classList.add('minimized');
 
-  // Если есть src в аудиоплеере — показываем мини-обложку с анимацией
-  if (audioPlayer.src) {
-    floatingImage.src = coverImage.src || 'covers/default.jpg';
-    showFloatingCover();
-  }
+  // Капля покажется, если песня играет
+  updateFloatingCoverVisibility();
+
   audioPlayer.pause();
   playPauseBtn.textContent = '⏵';
-  cancelAnimationFrame(animationFrameId);
 });
 
 // Обработка клика по песне
 songList.addEventListener('click', async (e) => {
   if (e.target.tagName === 'LI') {
-    // Убираем минимизированный класс и скрываем мини-обложку
     player.classList.remove('minimized');
     hideFloatingCover();
 
-    // Подгружаем данные песни
     const src = e.target.dataset.src;
     const cover = e.target.dataset.cover;
     const lyricsPath = e.target.dataset.lyrics;
     const [artist, title] = e.target.textContent.split(' - ');
 
-    // Обновляем интерфейс
     songTitle.textContent = title ? title.trim() : e.target.textContent.trim();
     songArtist.textContent = artist ? artist.trim() : '';
     showElement(coverImage);
     fadeInElement(coverImage);
     coverImage.src = cover;
 
-    // Загружаем текст песни
     const lyrics = await fetchText(lyricsPath);
     lyricsElement.textContent = lyrics || 'Текст песни не найден.';
     showElement(lyricsElement);
@@ -80,6 +82,8 @@ songList.addEventListener('click', async (e) => {
     playPauseBtn.textContent = '⏸';
 
     updateDurationOnLoad();
+
+    updateFloatingCoverVisibility();
   }
 });
 
@@ -92,11 +96,20 @@ playPauseBtn.addEventListener('click', () => {
     audioPlayer.pause();
     playPauseBtn.textContent = '⏵';
   }
+  updateFloatingCoverVisibility();
 });
 
 // Обновление прогресса аудио
 audioPlayer.addEventListener('timeupdate', () => {
   updateProgress();
+});
+
+// Обновление состояния плавающей капли при паузе/воспроизведении
+audioPlayer.addEventListener('play', updateFloatingCoverVisibility);
+audioPlayer.addEventListener('pause', updateFloatingCoverVisibility);
+audioPlayer.addEventListener('ended', () => {
+  playPauseBtn.textContent = '⏵';
+  updateFloatingCoverVisibility();
 });
 
 // Прогрессбар - изменение позиции воспроизведения
@@ -177,9 +190,11 @@ function hideFloatingCover() {
   }, 500);
 }
 
-// Клик по плавающей капле - открываем панель плеера (если минимизирована)
+// Клик по плавающей капле - раскрываем панель плеера
 floatingCover.addEventListener('click', () => {
-  player.classList.remove('minimized');
-  hideFloatingCover();
+  if (player.classList.contains('minimized')) {
+    player.classList.remove('minimized');
+    hideFloatingCover();
+  }
+  // Если уже раскрыт — ничего не делаем
 });
-
