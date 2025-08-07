@@ -131,6 +131,7 @@ body {
   background: rgba(0, 255, 255, 0.4);
   border-radius: 8px;
 }
+
 .audio-controls {
   display: flex;
   align-items: center;
@@ -179,6 +180,9 @@ body {
   appearance: none;
   outline: none;
   cursor: pointer;
+
+  /* Плавное изменение значения ползунка */
+  transition: background 0.3s ease;
 }
 
 #progressBar::-webkit-slider-thumb {
@@ -189,6 +193,9 @@ body {
   background: cyan;
   border: none;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+
+  /* Плавное движение */
+  transition: left 0.1s linear;
 }
 
 #currentTime, #duration {
