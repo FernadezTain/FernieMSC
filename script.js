@@ -1,41 +1,85 @@
-body {
-  margin: 0;
-  padding: 0;
-  background: linear-gradient(135deg, #e0e0e0, #f0f0f0);
-  font-family: 'Segoe UI', sans-serif;
-  color: #333;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+const songs = [
+  {
+    name: "song1.mp3",
+    title: "🔥 Трек 1",
+    cover: "covers/song1.jpg"
+  },
+  {
+    name: "song2.mp3",
+    title: "🎶 Трек 2",
+    cover: "covers/song2.jpg"
+  }
+];
+
+let currentIndex = 0;
+const audio = document.getElementById('audio');
+const coverImg = document.getElementById('cover-img');
+const trackName = document.getElementById('track-name');
+const progress = document.getElementById('progress');
+const volume = document.getElementById('volume');
+
+function loadSong(index) {
+  const song = songs[index];
+  audio.src = `songs/${song.name}`;
+  coverImg.src = song.cover;
+  trackName.textContent = `Сейчас играет: ${song.title}`;
 }
 
-.container {
-  background: rgba(255, 255, 255, 0.2);
-  backdrop-filter: blur(20px);
-  border-radius: 30px;
-  box-shadow: 20px 20px 60px #bebebe, -20px -20px 60px #ffffff;
-  padding: 40px;
-  max-width: 500px;
-  width: 90%;
+function playSong() {
+  audio.play();
+  document.querySelector('.controls button:nth-child(2)').textContent = '⏸';
 }
 
-.song {
-  margin: 15px 0;
-  padding: 15px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: inset 5px 5px 15px #cfcfcf, inset -5px -5px 15px #ffffff;
-  transition: all 0.3s ease;
-  cursor: pointer;
+function pauseSong() {
+  audio.pause();
+  document.querySelector('.controls button:nth-child(2)').textContent = '▶️';
 }
 
-.song:hover {
-  background: rgba(255, 255, 255, 0.6);
-  box-shadow: 0 0 20px #00f0ff80;
+function togglePlay() {
+  if (audio.paused) {
+    playSong();
+  } else {
+    pauseSong();
+  }
 }
 
-audio {
-  width: 100%;
-  margin-top: 10px;
+function prevSong() {
+  currentIndex = (currentIndex - 1 + songs.length) % songs.length;
+  loadSong(currentIndex);
+  playSong();
 }
+
+function nextSong() {
+  currentIndex = (currentIndex + 1) % songs.length;
+  loadSong(currentIndex);
+  playSong();
+}
+
+function updateProgress() {
+  const percent = (audio.currentTime / audio.duration) * 100;
+  progress.value = percent || 0;
+}
+
+function seek() {
+  audio.currentTime = (progress.value / 100) * audio.duration;
+}
+
+function setVolume() {
+  audio.volume = volume.value;
+}
+
+// Автоматически заполняем плейлист
+const playlist = document.getElementById('playlist');
+songs.forEach((song, index) => {
+  const li = document.createElement('li');
+  li.textContent = song.title;
+  li.onclick = () => {
+    currentIndex = index;
+    loadSong(index);
+    playSong();
+  };
+  playlist.appendChild(li);
+});
+
+// Загружаем первую песню
+loadSong(currentIndex);
