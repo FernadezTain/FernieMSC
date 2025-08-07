@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,13 +11,24 @@
     <div class="sidebar">
       <h2>Fernie</h2>
       <ul id="songList">
-        <li data-src="songs/song1.mp3" data-cover="covers/song1.jpg"> Пароли - KERASINN, whitek3d</li>
-        <li data-src="songs/song2.mp3" data-cover="covers/song2.jpg"> No info</li>
+        <li data-src="songs/song1.mp3" 
+            data-cover="covers/song1.jpg" 
+            data-lyrics="lyrics/song1.txt">
+          Пароли - KERASINN, whitek3d
+        </li>
+        <li data-src="songs/song2.mp3" 
+            data-cover="covers/song2.jpg" 
+            data-lyrics="lyrics/song2.txt">
+          No info
+        </li>
       </ul>
     </div>
+
     <div class="player">
-      <h1>🎶 Музыкальный плеер</h1>
       <img id="coverImage" src="" alt="Обложка" />
+      <h2 id="songTitle">Выберите трек</h2>
+      <h3 id="songArtist"></h3>
+      <pre id="lyrics">Текст песни появится здесь...</pre>
       <audio id="audioPlayer" controls></audio>
     </div>
   </div>
@@ -25,5 +36,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
-
