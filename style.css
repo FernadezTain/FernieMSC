@@ -180,8 +180,6 @@ body {
   appearance: none;
   outline: none;
   cursor: pointer;
-
-  /* Плавное изменение значения ползунка */
   transition: background 0.3s ease;
 }
 
@@ -193,9 +191,16 @@ body {
   background: cyan;
   border: none;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-
-  /* Плавное движение */
   transition: left 0.1s linear;
+}
+
+#progressBar::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: cyan;
+  border: none;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
 }
 
 #currentTime, #duration {
