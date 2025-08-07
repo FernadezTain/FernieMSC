@@ -59,12 +59,14 @@ playPauseBtn.addEventListener('click', () => {
 audioPlayer.addEventListener('loadedmetadata', () => {
   progressBar.max = Math.floor(audioPlayer.duration);
   durationEl.textContent = formatTime(audioPlayer.duration);
+  updateProgressBarBackground(); // Обновляем фон при загрузке
 });
 
 // Промотка по прогресс-бару
 progressBar.addEventListener('input', () => {
   audioPlayer.currentTime = progressBar.value;
   updateCurrentTimeDisplay(progressBar.value);
+  updateProgressBarBackground();
 });
 
 // Функция плавного обновления прогресс-бара
@@ -75,6 +77,7 @@ function startSmoothProgressUpdate() {
     const currentTime = audioPlayer.currentTime;
     progressBar.value = currentTime;
     updateCurrentTimeDisplay(currentTime);
+    updateProgressBarBackground();
 
     if (!audioPlayer.paused && !audioPlayer.ended) {
       animationFrameId = requestAnimationFrame(update);
@@ -94,4 +97,13 @@ function formatTime(time) {
   const minutes = Math.floor(time / 60);
   const seconds = Math.floor(time % 60).toString().padStart(2, '0');
   return `${minutes}:${seconds}`;
+}
+
+// Обновление фона прогресс-бара с заливкой
+function updateProgressBarBackground() {
+  const value = progressBar.value;
+  const max = progressBar.max || 100;
+  const percent = (value / max) * 100;
+
+  progressBar.style.background = `linear-gradient(to right, cyan 0%, cyan ${percent}%, #ccc ${percent}%, #ccc 100%)`;
 }
