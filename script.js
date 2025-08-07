@@ -107,6 +107,20 @@ progressBar.addEventListener('input', () => {
   updateProgressBarBackground();
 });
 
+// По клику на плавающую мини-обложку раскрываем панель плеера обратно
+floatingCover.addEventListener('click', () => {
+  // Скрываем каплю
+  floatingCover.classList.add('hidden');
+
+  // Убираем минимизацию — панель поднимается обратно
+  player.classList.remove('minimized');
+
+  // Показываем все элементы управления и детали
+  coverImage.classList.remove('hidden');
+  lyricsElement.classList.remove('hidden');
+  audioControls.classList.remove('hidden');
+});
+
 // Функция плавного обновления прогресс-бара
 function startSmoothProgressUpdate() {
   if (animationFrameId) cancelAnimationFrame(animationFrameId);
