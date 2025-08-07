@@ -35,7 +35,7 @@
       <audio id="audioPlayer"></audio>
 
       <div class="audio-controls hidden" id="audioControls">
-        <button id="playPauseBtn">⏵</button>
+        <button id="playPauseBtn" aria-label="Play/Pause">⏵</button>
         <div class="progress-container">
           <span id="currentTime">0:00</span>
           <input type="range" id="progressBar" value="0" min="0" step="1" />
@@ -44,7 +44,7 @@
       </div>
 
       <!-- Плавающая мини-обложка -->
-      <div id="floatingCover" class="floating hidden">
+      <div id="floatingCover" class="floating hidden" title="Показать песню">
         <img id="floatingImage" src="covers/default.jpg" alt="Обложка" />
       </div>
     </div>
