@@ -107,19 +107,31 @@ progressBar.addEventListener('input', () => {
   updateProgressBarBackground();
 });
 
-// По клику на плавающую мини-обложку раскрываем панель плеера обратно
 floatingCover.addEventListener('click', () => {
   // Скрываем каплю
   floatingCover.classList.add('hidden');
 
-  // Убираем минимизацию — панель поднимается обратно
+  // Раскрываем плеер (убираем минимизацию и добавляем expanded для анимации)
   player.classList.remove('minimized');
+  player.classList.add('expanded');
 
-  // Показываем все элементы управления и детали
+  // Показываем элементы с плавным появлением
   coverImage.classList.remove('hidden');
-  lyricsElement.classList.remove('hidden');
-  audioControls.classList.remove('hidden');
+
+  // Добавляем класс видимости с задержкой для плавного появления
+  setTimeout(() => {
+    songTitle.classList.add('visible');
+    songArtist.classList.add('visible');
+    lyricsElement.classList.add('visible');
+    audioControls.classList.remove('hidden');
+  }, 100);
+
+  // Если нужно, продолжаем обновлять прогресс
+  if (!audioPlayer.paused) {
+    startSmoothProgressUpdate();
+  }
 });
+
 
 // Функция плавного обновления прогресс-бара
 function startSmoothProgressUpdate() {
@@ -159,3 +171,4 @@ function updateProgressBarBackground() {
 
   progressBar.style.background = `linear-gradient(to right, cyan 0%, cyan ${percent}%, #ccc ${percent}%, #ccc 100%)`;
 }
+
