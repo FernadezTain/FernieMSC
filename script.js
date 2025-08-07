@@ -1,3 +1,19 @@
+const audioPlayer = document.getElementById('audioPlayer');
+const coverImage = document.getElementById('coverImage');
+const songList = document.getElementById('songList');
+const songTitle = document.getElementById('songTitle');
+const songArtist = document.getElementById('songArtist');
+const lyricsElement = document.getElementById('lyrics');
+
+const playPauseBtn = document.getElementById('playPauseBtn');
+const progressBar = document.getElementById('progressBar');
+const currentTimeEl = document.getElementById('currentTime');
+const durationEl = document.getElementById('duration');
+
+const audioControls = document.getElementById('audioControls');
+
+let animationFrameId = null;
+
 // Обработка клика по песне
 songList.addEventListener('click', async (e) => {
   if (e.target.tagName === 'LI') {
@@ -21,10 +37,10 @@ songList.addEventListener('click', async (e) => {
       lyricsElement.textContent = 'Текст песни не найден.';
     }
 
-    // 👉 Удаляем скрытие элементов
+    // Показываем скрытые элементы
     coverImage.classList.remove('hidden');
     lyricsElement.classList.remove('hidden');
-    document.querySelector('.audio-controls').classList.remove('hidden');
+    audioControls.classList.remove('hidden');
 
     audioPlayer.play();
     playPauseBtn.textContent = '⏸';
@@ -32,3 +48,69 @@ songList.addEventListener('click', async (e) => {
     startSmoothProgressUpdate();
   }
 });
+
+// Воспроизведение / Пауза
+playPauseBtn.addEventListener('click', () => {
+  if (audioPlayer.paused) {
+    audioPlayer.play();
+    playPauseBtn.textContent = '⏸';
+    startSmoothProgressUpdate();
+  } else {
+    audioPlayer.pause();
+    playPauseBtn.textContent = '⏵';
+    cancelAnimationFrame(animationFrameId);
+  }
+});
+
+// При загрузке метаданных (длительность)
+audioPlayer.addEventListener('loadedmetadata', () => {
+  progressBar.max = Math.floor(audioPlayer.duration);
+  durationEl.textContent = formatTime(audioPlayer.duration);
+  updateProgressBarBackground(); // Обновляем фон при загрузке
+});
+
+// Промотка по прогресс-бару
+progressBar.addEventListener('input', () => {
+  audioPlayer.currentTime = progressBar.value;
+  updateCurrentTimeDisplay(progressBar.value);
+  updateProgressBarBackground();
+});
+
+// Функция плавного обновления прогресс-бара
+function startSmoothProgressUpdate() {
+  if (animationFrameId) cancelAnimationFrame(animationFrameId);
+
+  function update() {
+    const currentTime = audioPlayer.currentTime;
+    progressBar.value = currentTime;
+    updateCurrentTimeDisplay(currentTime);
+    updateProgressBarBackground();
+
+    if (!audioPlayer.paused && !audioPlayer.ended) {
+      animationFrameId = requestAnimationFrame(update);
+    }
+  }
+
+  update();
+}
+
+// Обновление текущего времени на дисплее
+function updateCurrentTimeDisplay(time) {
+  currentTimeEl.textContent = formatTime(time);
+}
+
+// Формат времени (минуты:секунды)
+function formatTime(time) {
+  const minutes = Math.floor(time / 60);
+  const seconds = Math.floor(time % 60).toString().padStart(2, '0');
+  return `${minutes}:${seconds}`;
+}
+
+// Обновление фона прогресс-бара с заливкой
+function updateProgressBarBackground() {
+  const value = progressBar.value;
+  const max = progressBar.max || 100;
+  const percent = (value / max) * 100;
+
+  progressBar.style.background = `linear-gradient(to right, cyan 0%, cyan ${percent}%, #ccc ${percent}%, #ccc 100%)`;
+}
