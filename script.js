@@ -11,12 +11,43 @@ const currentTimeEl = document.getElementById('currentTime');
 const durationEl = document.getElementById('duration');
 
 const audioControls = document.getElementById('audioControls');
+const player = document.getElementById('player');
+
+const logo = document.getElementById('logo');
+const floatingCover = document.getElementById('floatingCover');
+const floatingImage = document.getElementById('floatingImage');
 
 let animationFrameId = null;
+
+// Обработка клика по заголовку "Fernie"
+logo.addEventListener('click', () => {
+  // Показываем стартовую страницу
+  songTitle.textContent = 'FernieX — Музыка';
+  songArtist.textContent = 'Выберите желаемый музыкальный трек в панели слева.';
+  lyricsElement.textContent = 'Текст песни появится здесь...';
+
+  // Скрываем детали трека
+  coverImage.classList.add('hidden');
+  lyricsElement.classList.add('hidden');
+  audioControls.classList.add('hidden');
+
+  // Добавляем класс для смещения панели вниз
+  player.classList.add('minimized');
+
+  // Если есть src в аудиоплеере — показываем мини-обложку с анимацией
+  if (audioPlayer.src) {
+    floatingImage.src = coverImage.src || 'covers/default.jpg';
+    floatingCover.classList.remove('hidden');
+  }
+});
 
 // Обработка клика по песне
 songList.addEventListener('click', async (e) => {
   if (e.target.tagName === 'LI') {
+    // Убираем минимизацию и плавающую обложку при выборе новой песни
+    player.classList.remove('minimized');
+    floatingCover.classList.add('hidden');
+
     const songSrc = e.target.getAttribute('data-src');
     const coverSrc = e.target.getAttribute('data-cover');
     const lyricsPath = e.target.getAttribute('data-lyrics');
@@ -37,7 +68,7 @@ songList.addEventListener('click', async (e) => {
       lyricsElement.textContent = 'Текст песни не найден.';
     }
 
-    // Показываем скрытые элементы
+    // Показываем элементы
     coverImage.classList.remove('hidden');
     lyricsElement.classList.remove('hidden');
     audioControls.classList.remove('hidden');
