@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FernieMC</title>
+  <title>FernieX - Музыка</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -25,16 +25,20 @@
     </div>
 
     <div class="player">
-      <img id="coverImage" src="" alt="Обложка" />
-      <h2 id="songTitle">Выберите трек</h2>
-      <h3 id="songArtist"></h3>
+      <!-- Картинка по умолчанию (можно заменить на свою обложку-заглушку) -->
+      <img id="coverImage" src="covers/default.jpg" alt="Обложка" />
 
+      <!-- Стартовый текст -->
+      <h1 id="songTitle">FernieX — Музыка</h1>
+      <h2 id="songArtist">Выберите желаемый музыкальный трек в панели слева.</h2>
+
+      <!-- Текст песни -->
       <pre id="lyrics">Текст песни появится здесь...</pre>
 
       <!-- Скрытый аудиоплеер -->
       <audio id="audioPlayer"></audio>
 
-      <!-- Кастомные аудиоконтролы -->
+      <!-- Аудиоконтролы -->
       <div class="audio-controls">
         <button id="playPauseBtn">⏵</button>
         <div class="progress-container">
@@ -49,4 +53,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
