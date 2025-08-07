@@ -25,21 +25,21 @@
     </div>
 
     <div class="player">
-      <!-- Картинка по умолчанию (можно заменить на свою обложку-заглушку) -->
-      <img id="coverImage" src="covers/default.jpg" alt="Обложка" />
+      <!-- Обложка — скрыта до выбора -->
+      <img id="coverImage" src="covers/default.jpg" alt="Обложка" class="hidden" />
 
       <!-- Стартовый текст -->
       <h1 id="songTitle">FernieX — Музыка</h1>
       <h2 id="songArtist">Выберите желаемый музыкальный трек в панели слева.</h2>
 
-      <!-- Текст песни -->
-      <pre id="lyrics">Текст песни появится здесь...</pre>
+      <!-- Текст песни — скрыт до выбора -->
+      <pre id="lyrics" class="hidden">Текст песни появится здесь...</pre>
 
-      <!-- Скрытый аудиоплеер -->
+      <!-- Аудиоплеер -->
       <audio id="audioPlayer"></audio>
 
-      <!-- Аудиоконтролы -->
-      <div class="audio-controls">
+      <!-- Кастомные аудиоконтролы — скрыты до выбора -->
+      <div class="audio-controls hidden" id="audioControls">
         <button id="playPauseBtn">⏵</button>
         <div class="progress-container">
           <span id="currentTime">0:00</span>
