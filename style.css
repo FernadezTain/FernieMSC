@@ -258,3 +258,72 @@ body {
   transition: transform 0.6s ease;
 }
 
+/* Плавное появление и исчезновение */
+.fade-in {
+  animation: fadeIn 0.5s forwards;
+}
+
+.fade-out {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(10px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fadeOut {
+  from {opacity: 1; transform: translateY(0);}
+  to {opacity: 0; transform: translateY(10px);}
+}
+
+/* Плавное расширение панели */
+#player {
+  transition: max-height 0.6s ease, box-shadow 0.5s ease;
+  max-height: 80px; /* минимальный размер в свернутом виде */
+  overflow: hidden;
+  box-shadow: none;
+  border-radius: 15px;
+  background: #f0f0f0;
+}
+
+#player.expanded {
+  max-height: 500px; /* максимальный размер для полной панели */
+  box-shadow: 0 0 20px cyan;
+}
+
+/* Плавающая капля с анимацией наведения */
+#floatingCover {
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  border-radius: 20px;
+  box-shadow: 0 0 15px cyan;
+}
+
+#floatingCover:hover {
+  box-shadow: 0 0 30px cyan, 0 0 40px cyan;
+}
+
+/* Стили для текста песни с тенью и плавностью */
+#lyrics, #songTitle, #songArtist {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  text-shadow: 0 0 8px cyan;
+}
+
+#lyrics.visible, #songTitle.visible, #songArtist.visible {
+  opacity: 1;
+}
+
+/* Немного больше пространства между элементами */
+#lyrics {
+  margin: 20px auto;
+  max-width: 600px;
+  padding: 15px;
+  border-radius: 15px;
+  background: #e0f7ff44;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: #111;
+}
+
