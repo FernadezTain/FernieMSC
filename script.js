@@ -26,10 +26,10 @@ logo.addEventListener('click', () => {
   songArtist.textContent = 'Выберите желаемый музыкальный трек в панели слева.';
   lyricsElement.textContent = 'Текст песни появится здесь...';
 
-  // Скрываем детали трека
-  coverImage.classList.add('hidden');
-  lyricsElement.classList.add('hidden');
-  audioControls.classList.add('hidden');
+  // Скрываем детали трека с анимацией
+  fadeOutElement(coverImage);
+  fadeOutElement(lyricsElement);
+  fadeOutElement(audioControls);
 
   // Добавляем класс для смещения панели вниз
   player.classList.add('minimized');
@@ -37,138 +37,149 @@ logo.addEventListener('click', () => {
   // Если есть src в аудиоплеере — показываем мини-обложку с анимацией
   if (audioPlayer.src) {
     floatingImage.src = coverImage.src || 'covers/default.jpg';
-    floatingCover.classList.remove('hidden');
+    showFloatingCover();
   }
+  audioPlayer.pause();
+  playPauseBtn.textContent = '⏵';
+  cancelAnimationFrame(animationFrameId);
 });
 
 // Обработка клика по песне
 songList.addEventListener('click', async (e) => {
   if (e.target.tagName === 'LI') {
-    // Убираем минимизацию и плавающую обложку при выборе новой песни
+    // Убираем минимизированный класс и скрываем мини-обложку
     player.classList.remove('minimized');
-    floatingCover.classList.add('hidden');
+    hideFloatingCover();
 
-    const songSrc = e.target.getAttribute('data-src');
-    const coverSrc = e.target.getAttribute('data-cover');
-    const lyricsPath = e.target.getAttribute('data-lyrics');
+    // Подгружаем данные песни
+    const src = e.target.dataset.src;
+    const cover = e.target.dataset.cover;
+    const lyricsPath = e.target.dataset.lyrics;
+    const [artist, title] = e.target.textContent.split(' - ');
 
-    audioPlayer.src = songSrc;
-    coverImage.src = coverSrc;
+    // Обновляем интерфейс
+    songTitle.textContent = title ? title.trim() : e.target.textContent.trim();
+    songArtist.textContent = artist ? artist.trim() : '';
+    showElement(coverImage);
+    fadeInElement(coverImage);
+    coverImage.src = cover;
 
-    const fullText = e.target.innerText;
-    const [titlePart, artistPart] = fullText.split(' - ');
-    songTitle.textContent = titlePart || 'Без названия';
-    songArtist.textContent = artistPart || '';
+    // Загружаем текст песни
+    const lyrics = await fetchText(lyricsPath);
+    lyricsElement.textContent = lyrics || 'Текст песни не найден.';
+    showElement(lyricsElement);
+    fadeInElement(lyricsElement);
 
-    try {
-      const response = await fetch(lyricsPath);
-      const lyrics = await response.text();
-      lyricsElement.textContent = lyrics;
-    } catch (error) {
-      lyricsElement.textContent = 'Текст песни не найден.';
-    }
+    audioPlayer.src = src;
+    audioPlayer.load();
 
-    // Показываем элементы
-    coverImage.classList.remove('hidden');
-    lyricsElement.classList.remove('hidden');
-    audioControls.classList.remove('hidden');
+    showElement(audioControls);
+    fadeInElement(audioControls);
 
     audioPlayer.play();
     playPauseBtn.textContent = '⏸';
 
-    startSmoothProgressUpdate();
+    updateDurationOnLoad();
   }
 });
 
-// Воспроизведение / Пауза
+// Кнопка play/pause
 playPauseBtn.addEventListener('click', () => {
   if (audioPlayer.paused) {
     audioPlayer.play();
     playPauseBtn.textContent = '⏸';
-    startSmoothProgressUpdate();
   } else {
     audioPlayer.pause();
     playPauseBtn.textContent = '⏵';
-    cancelAnimationFrame(animationFrameId);
   }
 });
 
-// При загрузке метаданных (длительность)
-audioPlayer.addEventListener('loadedmetadata', () => {
-  progressBar.max = Math.floor(audioPlayer.duration);
-  durationEl.textContent = formatTime(audioPlayer.duration);
-  updateProgressBarBackground(); // Обновляем фон при загрузке
+// Обновление прогресса аудио
+audioPlayer.addEventListener('timeupdate', () => {
+  updateProgress();
 });
 
-// Промотка по прогресс-бару
+// Прогрессбар - изменение позиции воспроизведения
 progressBar.addEventListener('input', () => {
   audioPlayer.currentTime = progressBar.value;
-  updateCurrentTimeDisplay(progressBar.value);
-  updateProgressBarBackground();
+  updateProgress();
 });
 
-floatingCover.addEventListener('click', () => {
-  // Скрываем каплю
-  floatingCover.classList.add('hidden');
-
-  // Раскрываем плеер (убираем минимизацию и добавляем expanded для анимации)
-  player.classList.remove('minimized');
-  player.classList.add('expanded');
-
-  // Показываем элементы с плавным появлением
-  coverImage.classList.remove('hidden');
-
-  // Добавляем класс видимости с задержкой для плавного появления
-  setTimeout(() => {
-    songTitle.classList.add('visible');
-    songArtist.classList.add('visible');
-    lyricsElement.classList.add('visible');
-    audioControls.classList.remove('hidden');
-  }, 100);
-
-  // Если нужно, продолжаем обновлять прогресс
-  if (!audioPlayer.paused) {
-    startSmoothProgressUpdate();
-  }
-});
-
-
-// Функция плавного обновления прогресс-бара
-function startSmoothProgressUpdate() {
-  if (animationFrameId) cancelAnimationFrame(animationFrameId);
-
-  function update() {
-    const currentTime = audioPlayer.currentTime;
-    progressBar.value = currentTime;
-    updateCurrentTimeDisplay(currentTime);
-    updateProgressBarBackground();
-
-    if (!audioPlayer.paused && !audioPlayer.ended) {
-      animationFrameId = requestAnimationFrame(update);
-    }
-  }
-
-  update();
+// Обновление длительности и прогресса при загрузке аудио
+function updateDurationOnLoad() {
+  audioPlayer.addEventListener('loadedmetadata', () => {
+    progressBar.max = Math.floor(audioPlayer.duration);
+    durationEl.textContent = formatTime(audioPlayer.duration);
+  }, { once: true });
 }
 
-// Обновление текущего времени на дисплее
-function updateCurrentTimeDisplay(time) {
-  currentTimeEl.textContent = formatTime(time);
+// Обновление прогресса и таймеров
+function updateProgress() {
+  progressBar.value = Math.floor(audioPlayer.currentTime);
+  currentTimeEl.textContent = formatTime(audioPlayer.currentTime);
 }
 
 // Формат времени (минуты:секунды)
-function formatTime(time) {
-  const minutes = Math.floor(time / 60);
-  const seconds = Math.floor(time % 60).toString().padStart(2, '0');
-  return `${minutes}:${seconds}`;
+function formatTime(sec) {
+  const minutes = Math.floor(sec / 60);
+  const seconds = Math.floor(sec % 60);
+  return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 }
 
-// Обновление фона прогресс-бара с заливкой
-function updateProgressBarBackground() {
-  const value = progressBar.value;
-  const max = progressBar.max || 100;
-  const percent = (value / max) * 100;
-
-  progressBar.style.background = `linear-gradient(to right, cyan 0%, cyan ${percent}%, #ccc ${percent}%, #ccc 100%)`;
+// Получение текста по URL
+async function fetchText(url) {
+  try {
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Ошибка загрузки текста');
+    return await response.text();
+  } catch (e) {
+    return null;
+  }
 }
+
+// Плавное появление элемента
+function fadeInElement(el) {
+  el.classList.remove('fade-out');
+  el.classList.add('fade-in');
+  el.classList.remove('hidden');
+}
+
+// Плавное исчезновение элемента
+function fadeOutElement(el) {
+  el.classList.remove('fade-in');
+  el.classList.add('fade-out');
+  setTimeout(() => {
+    el.classList.add('hidden');
+  }, 400);
+}
+
+// Показать элемент (без анимации)
+function showElement(el) {
+  el.classList.remove('hidden');
+}
+
+// Скрыть элемент (без анимации)
+function hideElement(el) {
+  el.classList.add('hidden');
+}
+
+// Показать плавающую мини-обложку
+function showFloatingCover() {
+  floatingCover.classList.add('visible');
+  floatingCover.classList.remove('hidden');
+}
+
+// Скрыть плавающую мини-обложку
+function hideFloatingCover() {
+  floatingCover.classList.remove('visible');
+  setTimeout(() => {
+    floatingCover.classList.add('hidden');
+  }, 500);
+}
+
+// Клик по плавающей капле - открываем панель плеера (если минимизирована)
+floatingCover.addEventListener('click', () => {
+  player.classList.remove('minimized');
+  hideFloatingCover();
+});
 
