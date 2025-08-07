@@ -1,33 +1,25 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>🎧 Музыка 2.0</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎧 Музыкальный Плеер</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>🎵 Музыкальный Плеер</h1>
-
-    <div class="cover">
-      <img id="cover-img" src="covers/song1.jpg" alt="Обложка">
+    <div class="sidebar">
+      <h2>🎵 Плейлист</h2>
+      <ul id="songList">
+        <li data-src="songs/song1.mp3" data-cover="covers/song1.jpg">🔥 Песня 1</li>
+        <li data-src="songs/song2.mp3" data-cover="covers/song2.jpg">✨ Песня 2</li>
+      </ul>
     </div>
-
-    <div id="track-name">Выберите трек</div>
-
-    <div class="controls">
-      <button onclick="prevSong()">⏮</button>
-      <button onclick="togglePlay()">▶️</button>
-      <button onclick="nextSong()">⏭</button>
+    <div class="player">
+      <h1>🎶 Музыкальный плеер</h1>
+      <img id="coverImage" src="" alt="Обложка" />
+      <audio id="audioPlayer" controls></audio>
     </div>
-
-    <audio id="audio" ontimeupdate="updateProgress()" onended="nextSong()"></audio>
-
-    <input type="range" id="progress" value="0" onchange="seek()" />
-
-    <input type="range" id="volume" min="0" max="1" step="0.01" value="1" onchange="setVolume()" />
-
-    <ul id="playlist"></ul>
   </div>
 
   <script src="script.js"></script>
