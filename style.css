@@ -93,25 +93,43 @@ body {
 /* 📜 Текст песни */
 #lyrics {
   white-space: pre-wrap;
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 18px;
+  font-weight: 600;
   text-align: center;
-  max-width: 700px;
+  max-width: 600px;
   line-height: 1.6;
   font-family: 'Segoe UI', sans-serif;
-  color: #333;
+  color: #222;
 
-  text-shadow:
-    0 0 5px rgba(255, 255, 255, 0.3),
-    0 0 10px rgba(0, 255, 255, 0.4),
-    1px 1px 2px rgba(0, 0, 0, 0.2);
+  /* Скроллируемое окно */
+  max-height: 4.8em; /* ≈ 3 строки */
+  overflow-y: auto;
+  padding: 20px;
 
-  margin-bottom: 30px;
-  transition: all 0.3s ease;
-  padding: 10px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.2);
+  /* Стиль неоморфного "углубления" */
+  background: #e0e0e0;
+  border-radius: 25px;
   box-shadow:
-    inset 0 0 5px rgba(0, 255, 255, 0.1),
-    0 0 10px rgba(0, 255, 255, 0.3);
+    inset 10px 10px 15px rgba(0, 0, 0, 0.1),
+    inset -10px -10px 15px rgba(255, 255, 255, 0.7),
+    0 0 15px rgba(0, 255, 255, 0.3);
+
+  transition: all 0.3s ease;
+  margin-bottom: 30px;
 }
+
+/* Кастомизация скроллбара для красоты */
+#lyrics::-webkit-scrollbar {
+  width: 8px;
+}
+
+#lyrics::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#lyrics::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 255, 0.4);
+  border-radius: 8px;
+}
+
+
